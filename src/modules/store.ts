@@ -6,6 +6,7 @@ import {
   SET_COUNT_OPTION,
   SET_CURRENCY_OPTION,
   SET_VIEW_OPTION,
+  ADD_COIN_DATA,
   contentAction,
 } from "./store.interface";
 
@@ -39,13 +40,18 @@ export const setCountOption = (option: string) => ({
   payload: option,
 });
 
+export const addCoinData = () => ({
+  type: ADD_COIN_DATA,
+});
+
 const INITIAL_STATE = {
-  priceList: [],
+  coinList: [],
   bookMarkList: [],
   coinDetail: {},
   viewOption: "all",
   currencyOption: "krw",
   countOption: "50",
+  dataLimitCount: 1,
 };
 
 export default function mainStore(
@@ -56,7 +62,7 @@ export default function mainStore(
     case GET_COIN_LIST:
       return {
         ...state,
-        priceList: action.payload,
+        coinList: action.payload,
       };
     case GET_BOOKMARK_LIST:
       return {
@@ -82,6 +88,11 @@ export default function mainStore(
       return {
         ...state,
         countOption: action.payload,
+      };
+    case ADD_COIN_DATA:
+      return {
+        ...state,
+        dataLimitCount: state.dataLimitCount + 1,
       };
     default:
       return state;

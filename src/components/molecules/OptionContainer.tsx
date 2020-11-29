@@ -9,50 +9,62 @@ import {
   setCurrencyOption,
   setCountOption,
 } from "modules/store";
-
+import { IOptions } from "../atoms/OptionBox";
 interface IProps {
   activeSelectBox: string | null;
-  changeActiveSelectBox: (item: string | null) => void;
+  onChangeActiveSelectBox: (item: string | null) => void;
 }
 
 export const OptionContainer: React.FC<IProps> = ({
   activeSelectBox,
-  changeActiveSelectBox,
+  onChangeActiveSelectBox,
 }) => {
   const dispatch = useDispatch();
   const { viewOption, currencyOption, countOption } = useGetOptions();
-  const options = [
-    { id: "view", value: viewOption },
-    { id: "currency", value: currencyOption },
-    { id: "count", value: countOption },
+
+  const options: IOptions[] = [
+    {
+      id: "view",
+      value: viewOption,
+      items: { all: "전체보기", bookMark: "북마크 보기" },
+    },
+    {
+      id: "currency",
+      value: currencyOption,
+      items: { krw: "KRW 보기", usd: "USD 보기" },
+    },
+    {
+      id: "count",
+      value: countOption,
+      items: { "10": "10개 보기", "30": "30개 보기", "50": "50개 보기" },
+    },
   ];
 
-  const switchHandler = (id: string, value: string) => {
-    switch (id) {
+  const handleClickOption = (optionId: string, itemKey: string) => {
+    switch (optionId) {
       case "view":
-        console.log(id, value);
-        dispatch(setViewOption(value));
+        dispatch(setViewOption(itemKey));
         return;
       case "currency":
-        console.log(id, value);
-        dispatch(setCurrencyOption(value));
+        dispatch(setCurrencyOption(itemKey));
         return;
       case "count":
-        console.log(id, value);
-        dispatch(setCountOption(value));
+        dispatch(setCountOption(itemKey));
         return;
     }
   };
 
   return (
     <STDContainer>
-      {options.map((option, idx) => (
+      {options.map((option) => (
         <OptionBox
-          key={idx}
+          key={option.id}
           option={option}
-          activeSelectBox={activeSelectBox}
-          changeActiveSelectBox={changeActiveSelectBox}
-          setOption={switchHandler}
+          open={activeSelectBox === option.id}
+          onOpenChange={(isOpen, option) =>
+            onChangeActiveSelectBox(isOpen ? option.id : null)
+          }
+          onClickItem={handleClickOption}
         />
       ))}
     </STDContainer>
