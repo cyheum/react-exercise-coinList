@@ -1,16 +1,22 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { useGetOptions } from "hooks/useGetData";
+import { useDispatch } from "react-redux";
+import { useGetOptions, useGetBookMarkList } from "hooks/useGetData";
+import { setBookMarkList } from "modules/store";
 import { ICoinData } from "pages";
 import StarIcon from "../atoms/StarIcon";
 import mixin from "styles/mixin";
+import { Link } from "react-router-dom";
 
 interface IProps {
   coinInfo: ICoinData;
+  bookMarkIdList: string[];
 }
 
-const CoinInfo: React.FC<IProps> = ({ coinInfo }) => {
+const CoinInfo: React.FC<IProps> = ({ coinInfo, bookMarkIdList }) => {
+  const dispatch = useDispatch();
   const {
+    id,
     name,
     symbol,
     current_price,
@@ -20,6 +26,7 @@ const CoinInfo: React.FC<IProps> = ({ coinInfo }) => {
     total_volume,
   } = coinInfo;
   const { currencyOption } = useGetOptions();
+  const bookMarkList = useGetBookMarkList();
   const getPrice = (price: number) => {
     return price - Math.floor(price) === 0 ? price : Number(price.toFixed(2));
   };
@@ -29,18 +36,39 @@ const CoinInfo: React.FC<IProps> = ({ coinInfo }) => {
     price_change_percentage_7d_in_currency,
   ];
 
+  const onChangeBookMarkList = (bookMarkList: ICoinData[], id: string) => {
+    if (bookMarkIdList.includes(id)) {
+      const newBookMarkList = bookMarkList.filter(
+        (bookMark) => bookMark.id !== id
+      );
+      localStorage.setItem("bookMarkList", JSON.stringify(newBookMarkList));
+      dispatch(setBookMarkList(newBookMarkList));
+    } else {
+      localStorage.setItem(
+        "bookMarkList",
+        JSON.stringify([...bookMarkList, coinInfo])
+      );
+      dispatch(setBookMarkList([...bookMarkList, coinInfo]));
+    }
+  };
+
   return (
     <STDContainer>
-      <StarIcon />
-      <STDCoinName>{name}</STDCoinName>
+      <StarIcon
+        onClickBookMarkToggle={() => onChangeBookMarkList(bookMarkList, id)}
+        isInBookMarkList={bookMarkIdList.includes(id)}
+      />
+      <Link to={`/priceList/${id}`}>
+        <STDCoinName>{name}</STDCoinName>
+      </Link>
       <STDCoinSymbol>{symbol.toUpperCase()}</STDCoinSymbol>
       <STDCoinPrice>
-        {currencyOption === "krw" ? "₩" : "$"}{" "}
+        {currencyOption === "krw" ? "₩" : "$"}
         {getPrice(current_price).toLocaleString()}
       </STDCoinPrice>
       {priceChangePerArray.map((per) => (
         <STDPriceChnagePer isNegative={per < 0}>
-          {per.toFixed(1)}%
+          {per ? `${per.toFixed(1)}%` : "-"}
         </STDPriceChnagePer>
       ))}
       <STDCoinVolume>
@@ -68,6 +96,10 @@ const STDCoinName = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const STDCoinSymbol = styled.div`

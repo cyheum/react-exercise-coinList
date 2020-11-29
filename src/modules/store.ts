@@ -1,7 +1,5 @@
 import {
-  DataType,
-  GET_COIN_LIST,
-  GET_BOOKMARK_LIST,
+  SET_BOOKMARK_LIST,
   GET_COIN_DETAIL,
   SET_COUNT_OPTION,
   SET_CURRENCY_OPTION,
@@ -9,14 +7,10 @@ import {
   ADD_COIN_DATA,
   contentAction,
 } from "./store.interface";
+import { ICoinData } from "pages";
 
-export const getCoinList = (data: DataType[]) => ({
-  type: GET_COIN_LIST,
-  payload: data,
-});
-
-export const getBookMarkList = (data: DataType[]) => ({
-  type: GET_BOOKMARK_LIST,
+export const setBookMarkList = (data: ICoinData[]) => ({
+  type: SET_BOOKMARK_LIST,
   payload: data,
 });
 
@@ -45,7 +39,6 @@ export const addCoinData = () => ({
 });
 
 const INITIAL_STATE = {
-  coinList: [],
   bookMarkList: [],
   coinDetail: {},
   viewOption: "all",
@@ -59,12 +52,7 @@ export default function mainStore(
   action: contentAction
 ) {
   switch (action.type) {
-    case GET_COIN_LIST:
-      return {
-        ...state,
-        coinList: action.payload,
-      };
-    case GET_BOOKMARK_LIST:
+    case SET_BOOKMARK_LIST:
       return {
         ...state,
         bookMarkList: action.payload,

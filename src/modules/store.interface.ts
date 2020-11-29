@@ -1,25 +1,15 @@
 import { ICoinData } from "pages";
 
-export const GET_COIN_LIST = "GET_COIN_LIST";
-export const GET_BOOKMARK_LIST = "GET_BOOKMARK_LIST";
+export const SET_BOOKMARK_LIST = "GET_BOOKMARK_LIST";
 export const GET_COIN_DETAIL = "GET_COIN_DETAIL";
 export const SET_VIEW_OPTION = "SET_VIEW_OPTION";
 export const SET_CURRENCY_OPTION = "SET_CURRENCY_OPTION";
 export const SET_COUNT_OPTION = "SET_COUNT_OPTION";
 export const ADD_COIN_DATA = "ADD_COIN_DATA";
 
-export interface DataType {
-  data: any;
-}
-
-interface GetCoinList {
-  type: typeof GET_COIN_LIST;
-  payload: DataType[];
-}
-
 interface GetBookMarkList {
-  type: typeof GET_BOOKMARK_LIST;
-  payload: DataType[];
+  type: typeof SET_BOOKMARK_LIST;
+  payload: ICoinData[];
 }
 
 interface GetCoinDetail {
@@ -47,7 +37,6 @@ interface AddCoinData {
 }
 
 export type contentAction =
-  | GetCoinList
   | GetBookMarkList
   | GetCoinDetail
   | SetViewOption
@@ -56,8 +45,7 @@ export type contentAction =
   | AddCoinData;
 
 export interface InitialData {
-  coinList: ICoinData[];
-  bookMarkList: string[];
+  bookMarkList: ICoinData[];
   coinDetail: any;
   viewOption: string;
   currencyOption: string;

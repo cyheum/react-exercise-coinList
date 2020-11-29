@@ -22,7 +22,6 @@ interface IProps {
   coinInfoTitles: ICoinInfoTitles[];
   path: string;
   coinList: ICoinData[];
-  bookMarkList: string[];
   activeSelectBox: string | null;
   isFetchDone: boolean;
   onChangeActiveSelectBox: (item: string | null) => void;
@@ -33,7 +32,6 @@ const MainScreen: React.FC<IProps> = ({
   coinList,
   categoryTitles,
   coinInfoTitles,
-  bookMarkList,
   activeSelectBox,
   isFetchDone,
   onChangeActiveSelectBox,
@@ -61,7 +59,10 @@ const MainScreen: React.FC<IProps> = ({
         <Categories categories={categoryTitles} currentPage={path} />
         {renderFilter(path)}
         <CoinInfoTitleContainer titles={coinInfoTitles} />
-        <CoinInfoContainer coinData={coinList} />
+        <CoinInfoContainer
+          coinData={coinList}
+          isPathBookMark={path === "/bookMark"}
+        />
       </STDContainer>
     </>
   );

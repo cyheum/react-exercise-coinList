@@ -8,13 +8,6 @@ export const useGetStore = () => {
   return store;
 };
 
-export const useGetPriceList = () => {
-  const { coinList } = useSelector(
-    ({ mainStore }: { mainStore: InitialData }) => mainStore
-  );
-  return coinList;
-};
-
 export const useGetBookMarkList = () => {
   const { bookMarkList } = useSelector(
     ({ mainStore }: { mainStore: InitialData }) => mainStore
