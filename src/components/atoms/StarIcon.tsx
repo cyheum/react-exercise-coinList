@@ -2,8 +2,20 @@ import React from "react";
 import styled from "styled-components";
 import mainSvg from "svgs";
 
-const StarIcon = () => {
-  return <STDContainer>{mainSvg.star(false)}</STDContainer>;
+interface IProps {
+  onClickBookMarkToggle: () => void;
+  isInBookMarkList: boolean;
+}
+
+const StarIcon: React.FC<IProps> = ({
+  onClickBookMarkToggle,
+  isInBookMarkList,
+}) => {
+  return (
+    <STDContainer onClick={onClickBookMarkToggle}>
+      {mainSvg.star(isInBookMarkList)}
+    </STDContainer>
+  );
 };
 
 export default StarIcon;

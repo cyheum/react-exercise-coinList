@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "react-router";
 import axios from "axios";
-import { useGetOptions, useGetPage } from "hooks/useGetData";
+import { useDispatch } from "react-redux";
+import { setBookMarkList } from "modules/store";
+import { useGetStore } from "hooks/useGetData";
 import MainScreen from "../Screens/MainScreen";
 import CoinDetailScreen from "../Screens/CoinDetailScreen";
 
@@ -46,19 +48,11 @@ export interface ICoinData {
 export const MainContainer: React.FC<RouteComponentProps<{ id?: string }>> = ({
   match,
 }) => {
+  const dispatch = useDispatch();
   const [coinList, setCoinList] = useState<ICoinData[]>([]);
-  const [bookMarkList, setBookMarkList] = useState<string[]>(() => {
-    const data = localStorage.getItem("bookMarkList");
-    return data ? JSON.parse(data) : [];
-  });
   const [activeSelectBox, setActiveSelectBox] = useState<string | null>(null);
   const [isFetchDone, setIsFetchDone] = useState(false);
-  const { currencyOption, countOption } = useGetOptions();
-  const dataLimitCount = useGetPage();
-
-  useEffect(() => {
-    getCoinList(countOption, currencyOption, dataLimitCount);
-  }, [dataLimitCount, countOption, currencyOption]);
+  const { currencyOption, countOption, dataLimitCount } = useGetStore();
 
   const getCoinList = async (
     count: string,
@@ -81,17 +75,29 @@ export const MainContainer: React.FC<RouteComponentProps<{ id?: string }>> = ({
       setCoinList(res.data);
       setIsFetchDone(false);
     } catch (err) {
+      alert("API 호출 실패!!");
       console.error(err);
     }
   };
 
-  const changeBookMarkList = (names: string[]) => {
-    setBookMarkList(names);
+  const getBookMarkList = () => {
+    const data = localStorage.getItem("bookMarkList");
+
+    if (data) {
+      dispatch(setBookMarkList(JSON.parse(data)));
+    } else {
+      dispatch(setBookMarkList([]));
+    }
   };
 
   const onChangeActiveSelectBox = (item: string | null) => {
     setActiveSelectBox(item);
   };
+
+  useEffect(() => {
+    getCoinList(countOption, currencyOption, dataLimitCount);
+    getBookMarkList();
+  }, [dataLimitCount, countOption, currencyOption]);
 
   const renderScreen = (path: string) => {
     switch (path) {
@@ -102,7 +108,6 @@ export const MainContainer: React.FC<RouteComponentProps<{ id?: string }>> = ({
             categoryTitles={CATEGORY_TITLES}
             coinInfoTitles={COIN_INFO_TITLES}
             coinList={coinList}
-            bookMarkList={bookMarkList}
             path={match.path}
             activeSelectBox={activeSelectBox}
             isFetchDone={isFetchDone}
