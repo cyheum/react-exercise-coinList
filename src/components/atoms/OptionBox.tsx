@@ -3,16 +3,21 @@ import styled from "styled-components";
 import mixin from "styles/mixin";
 import mainSvg from "svgs";
 
-interface IOptions {
+export interface IOptions {
   id: string;
-  value: string | number;
+  value: string;
+  items: IItems;
+}
+
+interface IItems {
+  [key: string]: string;
 }
 
 interface IProps {
+  open: boolean;
   option: IOptions;
-  activeSelectBox: string | null;
-  changeActiveSelectBox: (item: string | null) => void;
-  setOption: (id: string, value: string) => void;
+  onOpenChange: (isOpen: boolean, option: IOptions) => void;
+  onClickItem: (id: string, value: string) => void;
 }
 
 interface IOPTION_DATA {
@@ -22,35 +27,44 @@ interface IOPTION_DATA {
 }
 
 const OptionBox: React.FC<IProps> = ({
+  open,
   option,
-  activeSelectBox,
-  changeActiveSelectBox,
-  setOption,
+  onOpenChange,
+  onClickItem,
 }) => {
   const { id, value } = option;
-  const newData = Object.keys(OPTION_DATA[id]).map((title) => {
+  const newData = Object.keys(option.items).map((title) => {
     return {
-      key: title,
-      optionValue: OPTION_DATA[id][title],
+      itemKey: title,
+      label: option.items[title],
     };
   });
 
+  const getItemLabel = (itemKey: string) => {
+    return option.items[itemKey];
+  };
+
   return (
-    <STDContainer onClick={() => changeActiveSelectBox(id)}>
-      {OPTION_DATA[id][value]}
+    <STDContainer
+      onClick={(e) => {
+        e.stopPropagation();
+        onOpenChange(true, option);
+      }}
+    >
+      {getItemLabel(value)}
       {mainSvg.upImg()}
-      {activeSelectBox === id && (
+      {open && (
         <STDSelectContainer>
-          {newData.map(({ key, optionValue }) => (
+          {newData.map(({ itemKey, label }) => (
             <li
-              key={key}
+              key={itemKey}
               onClick={(e) => {
                 e.stopPropagation();
-                setOption(id, key);
-                changeActiveSelectBox(null);
+                onClickItem(id, itemKey);
+                onOpenChange(false, option);
               }}
             >
-              {optionValue}
+              {label}
             </li>
           ))}
         </STDSelectContainer>
@@ -60,12 +74,6 @@ const OptionBox: React.FC<IProps> = ({
 };
 
 export default OptionBox;
-
-const OPTION_DATA: IOPTION_DATA = {
-  view: { all: "전체보기", bookMark: "북마크 보기" },
-  currency: { krw: "KRW 보기", usd: "USD 보기" },
-  count: { "10": "10개 보기", "30": "30개 보기", "50": "50개 보기" },
-};
 
 const STDContainer = styled.div`
   ${mixin.flexSet()};

@@ -1,28 +1,37 @@
 import { useSelector } from "react-redux";
+import { InitialData } from "modules/store.interface";
 
 export const useGetStore = () => {
-  const store = useSelector(({ mainStore }: any) => mainStore);
+  const store = useSelector(
+    ({ mainStore }: { mainStore: InitialData }) => mainStore
+  );
   return store;
 };
 
 export const useGetPriceList = () => {
-  const { priceList } = useSelector(({ mainStore }: any) => mainStore);
-  return priceList;
+  const { coinList } = useSelector(
+    ({ mainStore }: { mainStore: InitialData }) => mainStore
+  );
+  return coinList;
 };
 
 export const useGetBookMarkList = () => {
-  const { bookMark } = useSelector(({ mainStore }: any) => mainStore);
-  return bookMark;
+  const { bookMarkList } = useSelector(
+    ({ mainStore }: { mainStore: InitialData }) => mainStore
+  );
+  return bookMarkList;
 };
 
 export const useGetCoinDetail = () => {
-  const { coinDetail } = useSelector(({ mainStore }: any) => mainStore);
+  const { coinDetail } = useSelector(
+    ({ mainStore }: { mainStore: InitialData }) => mainStore
+  );
   return coinDetail;
 };
 
 export const useGetOptions = () => {
   const { viewOption, currencyOption, countOption } = useSelector(
-    ({ mainStore }: any) => mainStore
+    ({ mainStore }: { mainStore: InitialData }) => mainStore
   );
   return {
     viewOption: viewOption,
@@ -31,7 +40,9 @@ export const useGetOptions = () => {
   };
 };
 
-export const useGetActiveSelectBox = () => {
-  const { activeSelectBox } = useSelector(({ mainStore }: any) => mainStore);
-  return activeSelectBox;
+export const useGetPage = () => {
+  const { dataLimitCount } = useSelector(
+    ({ mainStore }: { mainStore: InitialData }) => mainStore
+  );
+  return dataLimitCount;
 };
