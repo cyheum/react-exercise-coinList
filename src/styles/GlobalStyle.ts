@@ -13,7 +13,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    font-family: ‘Roboto’, sans-serif;
+    font-family: 'Roboto', sans-serif, 'Noto Sans KR', sans-serif;
   }
 
   button {

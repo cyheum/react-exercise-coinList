@@ -1,3 +1,1 @@
-# Custom_TS_React_Start
-
-> 평소 하는 커스텀한 초기세팅
+# open api를 활용한 react-exercise
