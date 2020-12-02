@@ -7,33 +7,33 @@ import mainSvg from "svgs";
 interface IProps {
   currencyOption: string;
   currentPrice: number;
-  cyptoCurrency: number | string;
+  cryptoCurrency: number | string;
   exchangeResultPrice: number;
-  onChangeCyptoCurrency: (num: string | number) => void;
+  onChangecryptoCurrency: (num: string | number) => void;
   onChangeExchangeResultPrice: (num: string | number) => void;
 }
 
 export const CurrencyExchangeContainer: React.FC<IProps> = ({
   currencyOption,
   currentPrice,
-  cyptoCurrency,
+  cryptoCurrency,
   exchangeResultPrice,
-  onChangeCyptoCurrency,
+  onChangecryptoCurrency,
   onChangeExchangeResultPrice,
 }) => {
   const newPrice =
-    typeof cyptoCurrency === "number"
-      ? currentPrice * cyptoCurrency
+    typeof cryptoCurrency === "number"
+      ? currentPrice * cryptoCurrency
       : currentPrice * 1;
 
   return (
     <STDContainer>
       <CurrencyExchangeBox
         currency={"BTC"}
-        price={cyptoCurrency.toLocaleString(undefined, {
+        price={cryptoCurrency.toLocaleString(undefined, {
           maximumFractionDigits: 8,
         })}
-        onChangeHandler={onChangeCyptoCurrency}
+        onChangeHandler={onChangecryptoCurrency}
       />
       {mainSvg.exchnageArrow}
       <CurrencyExchangeBox

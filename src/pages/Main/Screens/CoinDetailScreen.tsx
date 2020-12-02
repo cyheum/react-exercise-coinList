@@ -40,7 +40,7 @@ const CoinDetailScreen: React.FC<IProps> = ({
   const location = useLocation<{ currentCoinData: ICoinData | undefined }>();
   const dispatch = useDispatch();
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
-  const [cyptoCurrency, setCyptoCurrency] = useState<string | number>(1);
+  const [cryptoCurrency, setCryptoCurrency] = useState<string | number>(1);
   const [exchangeResultPrice, setExchangeResultPrice] = useState(1);
   const currentCoinData = location.state?.currentCoinData;
   const coinDetailData = useGetCoinDetail();
@@ -142,30 +142,42 @@ const CoinDetailScreen: React.FC<IProps> = ({
     }
   };
 
-  const onChangeCyptoCurrency = (num: string | number) => {
-    if (typeof num === "string") {
-      const newNum = num.split(",").join("");
-      if (Number(newNum).toString() !== "NaN") {
-        if (newNum.includes(".")) {
-          if (newNum.indexOf(".") === newNum.length - 1) {
-            setCyptoCurrency(newNum);
-          } else {
-            setCyptoCurrency(Number(newNum));
-          }
-        } else {
-          setCyptoCurrency(Number(newNum));
-        }
-      }
-    } else {
-      setCyptoCurrency(num);
+  const endsWith = (str: string, searchStr: string) => {
+    return str[str.length - 1] === searchStr;
+  };
+
+  const normalizeCryptoCurrencyNum = (num: string | number) => {
+    if (num === "") {
+      return 0;
     }
+
+    if (typeof num === "number") {
+      return num;
+    }
+
+    const numStrWithoutComma = num.split(",").join("");
+
+    if (isNaN(Number(numStrWithoutComma))) {
+      return null;
+    }
+
+    if (endsWith(numStrWithoutComma, ".")) {
+      return numStrWithoutComma;
+    } else {
+      return Number(numStrWithoutComma);
+    }
+  };
+
+  const onChangecryptoCurrency = (num: string | number) => {
+    const normalizedNum = normalizeCryptoCurrencyNum(num);
+    normalizedNum !== null && setCryptoCurrency(normalizedNum);
   };
 
   const onChangeExchangeResultPrice = (num: string | number) => {
     if (typeof num === "string") {
       const newNum = num.split(",").join("");
       console.log(num, newNum);
-      if (Number(newNum).toString() !== "NaN") {
+      if (!isNaN(Number(newNum))) {
         setExchangeResultPrice(Number(newNum));
       }
     } else {
@@ -205,9 +217,9 @@ const CoinDetailScreen: React.FC<IProps> = ({
         <CurrencyExchangeContainer
           currencyOption={currencyOption}
           currentPrice={currentPrice}
-          cyptoCurrency={cyptoCurrency}
+          cryptoCurrency={cryptoCurrency}
           exchangeResultPrice={exchangeResultPrice}
-          onChangeCyptoCurrency={onChangeCyptoCurrency}
+          onChangecryptoCurrency={onChangecryptoCurrency}
           onChangeExchangeResultPrice={onChangeExchangeResultPrice}
         />
         <DescriptionContainer
