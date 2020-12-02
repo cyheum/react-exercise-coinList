@@ -1,10 +1,12 @@
 import {
   SET_BOOKMARK_LIST,
-  GET_COIN_DETAIL,
+  SET_COIN_DETAIL,
   SET_COUNT_OPTION,
   SET_CURRENCY_OPTION,
   SET_VIEW_OPTION,
   ADD_COIN_DATA,
+  SET_MARK,
+  SET_EVENT_SPOT_HEIGHT,
   contentAction,
 } from "./store.interface";
 import { ICoinData } from "pages";
@@ -14,8 +16,8 @@ export const setBookMarkList = (data: ICoinData[]) => ({
   payload: data,
 });
 
-export const getCoinDetail = (data: any) => ({
-  type: GET_COIN_DETAIL,
+export const setCoinDetail = (data: any) => ({
+  type: SET_COIN_DETAIL,
   payload: data,
 });
 
@@ -38,6 +40,16 @@ export const addCoinData = () => ({
   type: ADD_COIN_DATA,
 });
 
+export const setMark = (isUnMarked: boolean) => ({
+  type: SET_MARK,
+  payload: isUnMarked,
+});
+
+export const setEventSpotHeight = (num: number) => ({
+  type: SET_EVENT_SPOT_HEIGHT,
+  payload: num,
+});
+
 const INITIAL_STATE = {
   bookMarkList: [],
   coinDetail: {},
@@ -45,6 +57,8 @@ const INITIAL_STATE = {
   currencyOption: "krw",
   countOption: "50",
   dataLimitCount: 1,
+  isUnMarked: false,
+  eventSpotHeight: 0,
 };
 
 export default function mainStore(
@@ -57,7 +71,7 @@ export default function mainStore(
         ...state,
         bookMarkList: action.payload,
       };
-    case GET_COIN_DETAIL:
+    case SET_COIN_DETAIL:
       return {
         ...state,
         coinDetail: action.payload,
@@ -81,6 +95,16 @@ export default function mainStore(
       return {
         ...state,
         dataLimitCount: state.dataLimitCount + 1,
+      };
+    case SET_MARK:
+      return {
+        ...state,
+        isUnMarked: action.payload,
+      };
+    case SET_EVENT_SPOT_HEIGHT:
+      return {
+        ...state,
+        eventSpotHeight: action.payload,
       };
     default:
       return state;

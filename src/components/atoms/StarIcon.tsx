@@ -3,7 +3,7 @@ import styled from "styled-components";
 import mainSvg from "svgs";
 
 interface IProps {
-  onClickBookMarkToggle: () => void;
+  onClickBookMarkToggle: (position: number) => void;
   isInBookMarkList: boolean;
 }
 
@@ -12,7 +12,9 @@ const StarIcon: React.FC<IProps> = ({
   isInBookMarkList,
 }) => {
   return (
-    <STDContainer onClick={onClickBookMarkToggle}>
+    <STDContainer
+      onClick={(e) => onClickBookMarkToggle(e.currentTarget.offsetTop + 29)}
+    >
       {mainSvg.star(isInBookMarkList)}
     </STDContainer>
   );

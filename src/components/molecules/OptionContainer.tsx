@@ -51,6 +51,8 @@ export const OptionContainer: React.FC<IProps> = ({
       case "count":
         dispatch(setCountOption(itemKey));
         return;
+      default:
+        return;
     }
   };
 
