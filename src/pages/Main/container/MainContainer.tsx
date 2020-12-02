@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "react-router";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { setBookMarkList } from "modules/store";
+import { setBookMarkList, setCoinDetail } from "modules/store";
 import { useGetStore } from "hooks/useGetData";
 import MainScreen from "../Screens/MainScreen";
 import CoinDetailScreen from "../Screens/CoinDetailScreen";
@@ -51,8 +51,14 @@ export const MainContainer: React.FC<RouteComponentProps<{ id?: string }>> = ({
   const dispatch = useDispatch();
   const [coinList, setCoinList] = useState<ICoinData[]>([]);
   const [activeSelectBox, setActiveSelectBox] = useState<string | null>(null);
-  const [isFetchDone, setIsFetchDone] = useState(false);
-  const { currencyOption, countOption, dataLimitCount } = useGetStore();
+  const [isFetching, setIsFetching] = useState(false);
+  const {
+    currencyOption,
+    countOption,
+    dataLimitCount,
+    isUnMarked,
+    eventSpotHeight,
+  } = useGetStore();
 
   const getCoinList = async (
     count: string,
@@ -60,7 +66,7 @@ export const MainContainer: React.FC<RouteComponentProps<{ id?: string }>> = ({
     dataLimitCount: number
   ) => {
     try {
-      setIsFetchDone(true);
+      setIsFetching(true);
       const res = await axios.get(
         "https://api.coingecko.com/api/v3/coins/markets",
         {
@@ -73,10 +79,33 @@ export const MainContainer: React.FC<RouteComponentProps<{ id?: string }>> = ({
         }
       );
       setCoinList(res.data);
-      setIsFetchDone(false);
+      setIsFetching(false);
     } catch (err) {
       alert("API 호출 실패!!");
       console.error(err);
+    }
+  };
+
+  const getCoinDetailData = async (coinId: string | undefined) => {
+    if (coinId) {
+      try {
+        setIsFetching(true);
+        const res = await axios.get(
+          `https://api.coingecko.com/api/v3/coins/${coinId}`,
+          {
+            params: {
+              tickers: false,
+              community_data: false,
+              developer_data: false,
+            },
+          }
+        );
+        dispatch(setCoinDetail(res.data));
+        setIsFetching(false);
+      } catch (err) {
+        alert("API 호출 실패!!");
+        console.error(err);
+      }
     }
   };
 
@@ -107,16 +136,28 @@ export const MainContainer: React.FC<RouteComponentProps<{ id?: string }>> = ({
           <MainScreen
             categoryTitles={CATEGORY_TITLES}
             coinInfoTitles={COIN_INFO_TITLES}
+            isUnMarked={isUnMarked}
+            eventSpotHeight={eventSpotHeight}
             coinList={coinList}
             path={match.path}
             activeSelectBox={activeSelectBox}
-            isFetchDone={isFetchDone}
+            isFetching={isFetching}
             onChangeActiveSelectBox={onChangeActiveSelectBox}
           />
         );
       case "/priceList/:id":
       case "/bookMark/:id":
-        return <CoinDetailScreen coinId={match.params.id} />;
+        return (
+          <CoinDetailScreen
+            isUnMarked={isUnMarked}
+            eventSpotHeight={eventSpotHeight}
+            coinId={match.params.id}
+            isFetching={isFetching}
+            activeSelectBox={activeSelectBox}
+            getCoinDetailData={getCoinDetailData}
+            onChangeActiveSelectBox={onChangeActiveSelectBox}
+          />
+        );
       default:
         return <div>잘못된 경로입니다.</div>;
     }

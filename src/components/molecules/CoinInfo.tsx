@@ -1,12 +1,12 @@
 import React from "react";
 import styled, { css } from "styled-components";
 import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { useGetOptions, useGetBookMarkList } from "hooks/useGetData";
-import { setBookMarkList } from "modules/store";
+import { setBookMarkList, setMark, setEventSpotHeight } from "modules/store";
 import { ICoinData } from "pages";
 import StarIcon from "../atoms/StarIcon";
 import mixin from "styles/mixin";
-import { Link } from "react-router-dom";
 
 interface IProps {
   coinInfo: ICoinData;
@@ -14,6 +14,7 @@ interface IProps {
 }
 
 const CoinInfo: React.FC<IProps> = ({ coinInfo, bookMarkIdList }) => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const {
     id,
@@ -36,13 +37,20 @@ const CoinInfo: React.FC<IProps> = ({ coinInfo, bookMarkIdList }) => {
     price_change_percentage_7d_in_currency,
   ];
 
-  const onChangeBookMarkList = (bookMarkList: ICoinData[], id: string) => {
+  const onChangeBookMarkList = (
+    bookMarkList: ICoinData[],
+    id: string,
+    positionY: number
+  ) => {
     if (bookMarkIdList.includes(id)) {
       const newBookMarkList = bookMarkList.filter(
         (bookMark) => bookMark.id !== id
       );
       localStorage.setItem("bookMarkList", JSON.stringify(newBookMarkList));
       dispatch(setBookMarkList(newBookMarkList));
+      dispatch(setEventSpotHeight(positionY));
+      dispatch(setMark(true));
+      setTimeout(() => dispatch(setMark(false)), 1200);
     } else {
       localStorage.setItem(
         "bookMarkList",
@@ -52,22 +60,31 @@ const CoinInfo: React.FC<IProps> = ({ coinInfo, bookMarkIdList }) => {
     }
   };
 
+  const onClickGoToDetail = (coinId: string, currentCoinData: ICoinData) => {
+    history.push({
+      pathname: `/priceList/${coinId}`,
+      state: { currentCoinData: currentCoinData },
+    });
+  };
+
   return (
     <STDContainer>
       <StarIcon
-        onClickBookMarkToggle={() => onChangeBookMarkList(bookMarkList, id)}
+        onClickBookMarkToggle={(position: number) =>
+          onChangeBookMarkList(bookMarkList, id, position)
+        }
         isInBookMarkList={bookMarkIdList.includes(id)}
       />
-      <Link to={`/priceList/${id}`}>
-        <STDCoinName>{name}</STDCoinName>
-      </Link>
+      <STDCoinName onClick={() => onClickGoToDetail(id, coinInfo)}>
+        {name}
+      </STDCoinName>
       <STDCoinSymbol>{symbol.toUpperCase()}</STDCoinSymbol>
       <STDCoinPrice>
         {currencyOption === "krw" ? "₩" : "$"}
         {getPrice(current_price).toLocaleString()}
       </STDCoinPrice>
-      {priceChangePerArray.map((per) => (
-        <STDPriceChnagePer isNegative={per < 0}>
+      {priceChangePerArray.map((per, idx) => (
+        <STDPriceChnagePer key={per + idx} isNegative={per < 0}>
           {per ? `${per.toFixed(1)}%` : "-"}
         </STDPriceChnagePer>
       ))}
@@ -96,6 +113,7 @@ const STDCoinName = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  cursor: pointer;
 
   &:hover {
     text-decoration: underline;

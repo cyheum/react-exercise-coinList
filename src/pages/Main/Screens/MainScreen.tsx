@@ -6,6 +6,7 @@ import mixin from "styles/mixin";
 import { CoinInfoTitleContainer, CoinInfoContainer } from "components";
 import { ICoinData } from "../container/MainContainer";
 import Loader from "./Loader";
+import Toast from "components/atoms/Toast";
 
 interface ICategoryTitles {
   id: string;
@@ -20,20 +21,24 @@ interface ICoinInfoTitles {
 interface IProps {
   categoryTitles: ICategoryTitles[];
   coinInfoTitles: ICoinInfoTitles[];
+  isUnMarked: boolean;
+  eventSpotHeight: number;
   path: string;
   coinList: ICoinData[];
   activeSelectBox: string | null;
-  isFetchDone: boolean;
+  isFetching: boolean;
   onChangeActiveSelectBox: (item: string | null) => void;
 }
 
 const MainScreen: React.FC<IProps> = ({
+  isUnMarked,
+  eventSpotHeight,
   path,
   coinList,
   categoryTitles,
   coinInfoTitles,
   activeSelectBox,
-  isFetchDone,
+  isFetching,
   onChangeActiveSelectBox,
 }) => {
   const renderFilter = (path: string) => {
@@ -54,8 +59,9 @@ const MainScreen: React.FC<IProps> = ({
 
   return (
     <>
-      {isFetchDone && <Loader />}
+      {isFetching && <Loader />}
       <STDContainer onClick={() => onChangeActiveSelectBox(null)}>
+        {isUnMarked && <Toast positionX={350} positionY={eventSpotHeight} />}
         <Categories categories={categoryTitles} currentPage={path} />
         {renderFilter(path)}
         <CoinInfoTitleContainer titles={coinInfoTitles} />
@@ -72,7 +78,7 @@ export default MainScreen;
 
 const STDContainer = styled.div`
   ${mixin.flexSet("center", "center", "column")}
-  display: flex;
+  position: relative;
   margin: 0 auto;
   padding: 100px 0;
 `;
